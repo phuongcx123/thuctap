@@ -1,0 +1,9 @@
+|-- /app 
+    |-- /common
+    |-- /controllers
+    |-- /models
+    |-- /views
+|-- /assets
+|-- /routes
+|-- .env
+|-- index.php
