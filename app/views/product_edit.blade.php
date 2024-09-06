@@ -1,7 +1,31 @@
 @extends('layouts.master')
 @section('content')
     <div class="container-fluid">
+
         <div class="row">
+            @if (isset($_SESSION['status']) && $_SESSION['status'])
+                <div class="alert alert-success">
+                    {{ $_SESSION['msg'] }}
+                </div>
+
+                @php
+                    unset($_SESSION['status']);
+                    unset($_SESSION['msg']);
+                @endphp
+            @endif
+            @if (!empty($_SESSION['errors']))
+                <div class="alert alert-warning">
+                    <ul>
+                        @foreach ($_SESSION['errors'] as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+
+                    @php
+                        unset($_SESSION['errors']);
+                    @endphp
+                </div>
+            @endif
             <!-- left column -->
             <div class="col-md">
                 <!-- general form elements -->
@@ -11,7 +35,7 @@
                     </div>
                     <!-- /.card-header -->
                     <!-- form start -->
-                    <form method="POST" action="{{ url('/edit/'.$product['id']) }}" enctype="multipart/form-data">
+                    <form method="POST" action="{{ url('/edit/' . $product['id']) }}" enctype="multipart/form-data">
                         <div class="card-body">
                             <div class="form-group">
                                 <label for="exampleInputEmail1">ID</label>

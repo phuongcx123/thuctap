@@ -32,12 +32,29 @@ class ProductController extends BaseController
 
         if (isset($_POST['gui'])) {
 
-
-            $targetDir = "assets/image/";
-            $targetFile = $targetDir . $_FILES['img']['name'];
+            $validator = new Validator;
+            $validation = $validator->make($_POST + $_FILES, [
+                'name'          => 'required|max:50',
+                'gia'         => 'required|min:1',
+                'nd'   => 'required',
+                'image'         => 'uploaded_file:0,2M,png,jpg,jpeg',
+            ]);
+            $validation->validate();
+            if ($validation->fails()) {
+                $_SESSION['errors'] = $validation->errors()->firstOfAll();
+                header('Location: ' . url('/add'));
+                exit;
+            } else {
+                $targetDir = "assets/image/";
+                $targetFile = $targetDir . $_FILES['img']['name'];
+            }
             if (move_uploaded_file($_FILES['img']['tmp_name'], $targetFile)) {
 
                 $imageUrl = $targetFile;
+            } else {
+                $_SESSION['errors']['img'] = 'Upload Không thành công';
+                header('Location: ' . url('/add'));
+                exit;
             }
 
             $data = [
@@ -47,53 +64,75 @@ class ProductController extends BaseController
                 'description' => $_POST['nd']
             ];
             $this->product->insert($data);
+            $_SESSION['status'] = true;
+            $_SESSION['msg'] = 'Thao tác thành công';
+
             header('location:http://localhost/Task2/');
         }
-       
     }
 
-    public function show($id) {
+
+
+    public function show($id)
+    {
         $product = $this->product->findByID($id);
         $this->views('product_detail', compact('product'));
     }
 
-    public function edit($id) {
+    public function edit($id)
+    {
         $product = $this->product->findByID($id);
         $this->views('product_edit', compact('product'));
     }
 
-    public function update($id) {
-         if (isset($_POST['gui'])) {
+    public function update($id)
+    {
+        if (isset($_POST['gui'])) {
+            $validator = new Validator;
+            $validation = $validator->make($_POST + $_FILES, [
+                'name'          => 'required|max:50',
+                'gia'         => 'required|min:1',
+                'nd'   => 'required',
+                'image'         => 'uploaded_file:0,2M,png,jpg,jpeg',
+            ]);
+            $validation->validate();
 
-
-           
-            if ($_FILES['img']['size'] != 0) {
-               
-                $targetDir = "assets/image/";
-            
-                $targetFile = $targetDir . $_FILES['img']['name'];
-               
-                if (move_uploaded_file($_FILES['img']['tmp_name'], $targetFile)) {
-                    $image_url = $targetFile;
-                }
+            if ($validation->fails()) {
+                $_SESSION['errors'] = $validation->errors()->firstOfAll();
+                header('Location: ' . url("/edit/$id"));
+                exit;
             } else {
-                $image_url = $_POST['anh'];
-            }
+                if ($_FILES['img']['size'] != 0) {
 
-            $data = [
-                'name' => $_POST['name'],
-                'price' => $_POST['gia'],
-                'image' => $image_url,
-                'description' => $_POST['nd']
-            ];
-          
-            $this->product->update($id,$data);
-            header('location:http://localhost/Task2/');
+                    $targetDir = "assets/image/";
+
+                    $targetFile = $targetDir . $_FILES['img']['name'];
+
+                    if (move_uploaded_file($_FILES['img']['tmp_name'], $targetFile)) {
+                        $image_url = $targetFile;
+                    }
+                } else {
+                    $image_url = $_POST['anh'];
+                }
+
+                $data = [
+                    'name' => $_POST['name'],
+                    'price' => $_POST['gia'],
+                    'image' => $image_url,
+                    'description' => $_POST['nd']
+                ];
+
+                $this->product->update($id, $data);
+                $_SESSION['status'] = true;
+                $_SESSION['msg'] = 'Thao tác thành công';
+                header('Location: ' . url("/edit/$id"));
+            }
         }
     }
 
-    public function delete($id) {
-        $this -> product->delete($id);
+    public function delete($id)
+    {
+        $this->product->delete($id);
         header('location:http://localhost/Task2/');
     }
 }

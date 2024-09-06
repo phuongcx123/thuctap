@@ -2,15 +2,23 @@
 @section('content')
 
     <h2>ProDucts List </h2>
-    <a class="btn btn-primary" href="{{ url('/add') }}">Create</a>
+    <a class="btn btn-primary" href="{{ url('/add') }}">Create</a> <br>
+   @if (isset($_SESSION['status']) && $_SESSION['status'])
+                        <div class="alert alert-success">
+                            {{ $_SESSION['msg'] }}
+                        </div>
 
+                        @php
+                            unset($_SESSION['status']);
+                            unset($_SESSION['msg']);
+                        @endphp
+                    @endif
     <table class="table">
         <thead>
             <tr>
                 <th>#</th>
                 <th>Name</th>
                 <th>Price</th>
-               
                 <th>Description</th>
                 <th>Aciton</th>
             </tr>
