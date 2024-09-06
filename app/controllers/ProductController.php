@@ -3,28 +3,35 @@
 namespace App\Controllers;
 
 use App\Common\BaseController;
+use App\Models\Category;
 use App\Models\Product;
 use Rakit\Validation\Validator;
 
 class ProductController extends BaseController
 {
     private Product $product;
+    private Category $category;
 
     public function __construct()
     {
         $this->product = new Product();
+        $this->category = new Category();
+        
     }
 
     public function index()
     {
-        $pro = $this->product->all();
-        $this->views("product_list", compact("pro"));
+       
+        [$pro, $totalPage] =$this->product->paginate($_GET['page'] ?? 1);
+        $cate = $this->category->all();
+       
+        $this->views("product_list", compact("pro" , "totalPage" , "cate"));
     }
 
     public function create()
     {
-
-        $this->views("product_form");
+        $cate = $this->category->all();
+        $this->views("product_form" , compact("cate"));
     }
 
     public function store()
@@ -37,6 +44,7 @@ class ProductController extends BaseController
                 'name'          => 'required|max:50',
                 'gia'         => 'required|min:1',
                 'nd'   => 'required',
+                'cate'  => 'required',
                 'image'         => 'uploaded_file:0,2M,png,jpg,jpeg',
             ]);
             $validation->validate();
@@ -61,7 +69,8 @@ class ProductController extends BaseController
                 'name' => $_POST['name'],
                 'price' => $_POST['gia'],
                 'image' => $imageUrl,
-                'description' => $_POST['nd']
+                'description' => $_POST['nd'] , 
+                'category_id'=> $_POST['cate'],
             ];
             $this->product->insert($data);
             $_SESSION['status'] = true;
@@ -75,14 +84,18 @@ class ProductController extends BaseController
 
     public function show($id)
     {
-        $product = $this->product->findByID($id);
-        $this->views('product_detail', compact('product'));
+        $product = $this->product->findByID($id);        
+        $cate = $this->category->all();
+
+        $this->views('product_detail', compact('product' ,'cate'));
     }
 
     public function edit($id)
     {
         $product = $this->product->findByID($id);
-        $this->views('product_edit', compact('product'));
+        $cate = $this->category->all();
+        
+        $this->views('product_edit', compact('product' , 'cate'));
     }
 
     public function update($id)
@@ -93,6 +106,7 @@ class ProductController extends BaseController
                 'name'          => 'required|max:50',
                 'gia'         => 'required|min:1',
                 'nd'   => 'required',
+                'cate'  => 'required',  
                 'image'         => 'uploaded_file:0,2M,png,jpg,jpeg',
             ]);
             $validation->validate();
@@ -119,7 +133,8 @@ class ProductController extends BaseController
                     'name' => $_POST['name'],
                     'price' => $_POST['gia'],
                     'image' => $image_url,
-                    'description' => $_POST['nd']
+                    'description' => $_POST['nd'] , 
+                    'category_id'=> $_POST['cate'],
                 ];
 
                 $this->product->update($id, $data);

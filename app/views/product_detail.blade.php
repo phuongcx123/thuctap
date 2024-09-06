@@ -34,7 +34,17 @@
                             <input type="number" class="form-control" id="exampleInputEmail1" placeholder="Price"
                                 value="{{ $product['price'] }}" name="gia">
                         </div>
-
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">Category</label>
+                            <input type="text" class="form-control" id="exampleInputEmail1" placeholder="Price"
+                                value="@foreach ($cate as $ct)
+                            @if ($ct['id'] == $product['category_id'])
+                                {{ $ct['name'] }}
+                            @endif
+                        
+                        @endforeach
+                                " name="gia">
+                        </div>
                         <div class="form-group">
                             <label for="exampleInputEmail1">Description</label>
                             <textarea name="nd" id="" class="form-control">{{ $product['description'] }}</textarea>

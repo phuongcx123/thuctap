@@ -64,7 +64,15 @@
                                 <input type="number" class="form-control" id="exampleInputEmail1" placeholder="Price"
                                     value="{{ $product['price'] }}" name="gia">
                             </div>
-
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Category</label>
+                                <select class="form-select" aria-label="Default select example" name="cate">
+                                    <option value="">Open this select</option>
+                                   @foreach ($cate as $item)
+                                   <option value="{{ $item['id'] }}" {{  ($item['id'] == $product['category_id'] ) ? 'selected' : '' }}  >{{ $item['name'] }}</option>
+                                   @endforeach
+                                  </select>
+                            </div>
                             <div class="form-group">
                                 <label for="exampleInputEmail1">Description</label>
                                 <textarea name="nd" id="" class="form-control">{{ $product['description'] }}</textarea>
